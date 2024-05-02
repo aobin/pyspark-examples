@@ -5,7 +5,7 @@ Created on Thu Oct 24 22:42:50 2019
 @author: prabha
 """
 
-import pyspark
+# import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, round
 from pyspark.sql.functions import to_timestamp, current_timestamp

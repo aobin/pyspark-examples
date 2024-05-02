@@ -20,11 +20,11 @@ df = spark.createDataFrame(data=data,schema=columns)
 df.show(truncate=False)
 
 def convertCase(str):
-    resStr=""
+    resStr = ""
     arr = str.split(" ")
     for x in arr:
-       resStr= resStr + x[0:1].upper() + x[1:len(x)] + " "
-    return resStr 
+        resStr = resStr + x[0:1].upper() + x[1:len(x)] + " "
+    return resStr.strip()
 
 """ Converting function to UDF """
 convertUDF = udf(lambda z: convertCase(z))
@@ -34,11 +34,11 @@ df.select(col("Seqno"), \
 .show(truncate=False)
 
 
-@udf(returnType=StringType()) 
+@udf(returnType=StringType())
 def upperCase(str):
     return str.upper()
 
-upperCaseUDF = udf(lambda z:upperCase(z),StringType())    
+upperCaseUDF = udf(lambda z:upperCase(z),StringType())
 
 df.withColumn("Cureated Name", upperCase(col("Name"))) \
 .show(truncate=False)
@@ -48,11 +48,11 @@ spark.udf.register("convertUDF", convertCase,StringType())
 df.createOrReplaceTempView("NAME_TABLE")
 spark.sql("select Seqno, convertUDF(Name) as Name from NAME_TABLE") \
      .show(truncate=False)
-     
+
 spark.sql("select Seqno, convertUDF(Name) as Name from NAME_TABLE " + \
           "where Name is not null and convertUDF(Name) like '%John%'") \
-     .show(truncate=False)  
-     
+     .show(truncate=False)
+
 """ null check """
 
 columns = ["Seqno","Name"]
@@ -64,7 +64,7 @@ data = [("1", "john jones"),
 df2 = spark.createDataFrame(data=data,schema=columns)
 df2.show(truncate=False)
 df2.createOrReplaceTempView("NAME_TABLE2")
-    
+
 spark.udf.register("_nullsafeUDF", lambda str: convertCase(str) if not str is None else "" , StringType())
 
 spark.sql("select _nullsafeUDF(Name) from NAME_TABLE2") \
@@ -72,9 +72,9 @@ spark.sql("select _nullsafeUDF(Name) from NAME_TABLE2") \
 
 spark.sql("select Seqno, _nullsafeUDF(Name) as Name from NAME_TABLE2 " + \
           " where Name is not null and _nullsafeUDF(Name) like '%John%'") \
-     .show(truncate=False)  
+     .show(truncate=False)
 
 
 
- 
+
 
